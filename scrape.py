@@ -1,6 +1,6 @@
 import errno, os, requests, sys
 from bs4 import BeautifulSoup
-from constants import MANGA_DIR
+from constants import MANGA_DIR, BASE_URL
 # Manga web scraper.
 s = requests.session()
 def get(url):
@@ -22,9 +22,12 @@ def save_page(url, chapt, page):
         return 200
     
     soup = get(url)
-    if type(soup) == type(1):
+    if type(soup) == type(1) or soup is None:
         return soup
-    url = soup.find(id='img')['src']
+    try:
+        url = soup.find(id='img')['src']
+    except:
+        return 404
     with open(path, 'wb') as fh:
         print('GET:  '+url)
         image = s.get(url).content
@@ -47,18 +50,17 @@ def get_range(base_url, start, end):
     
 if __name__ =='__main__':
     if len(sys.argv) < 5:
-        print('Usage: python scrape.py n/e folder_name base_url start end')
-        print('Start and end are start/end chapters, base_url is manga base')
+        print('Usage: python scrape.py n/e folder_name manga_url_name start end')
+        print('Start and end are start/end chapters, manga_url_name is the name in the url for ur manga')
         print('Minus the chapter and page numbers')
         sys.exit(1)
-    opt = sys.argv[1] # pass 'n' for new manga, anything else for adding to existing
-    name = sys.argv[2]
+    name = sys.argv[1]
     thispath = MANGA_DIR+'/'+name
-    if opt == 'n':
+    if not os.path.isdir(thispath):
         new_manga(name)
-    base_url = sys.argv[3]
-    start = int(sys.argv[4]) # represents start chapter
-    end = int(sys.argv[5]) # represents end chapter
+    base_url = BASE_URL + '/' + sys.argv[2]
+    start = int(sys.argv[3]) # represents start chapter
+    end = int(sys.argv[4]) # represents end chapter
     get_range(base_url, start, end)
 
 
