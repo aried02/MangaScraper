@@ -20,7 +20,7 @@ def save_page(url, chapt, page):
     if os.path.isfile(path):
         print("%s already exists, skipping" % path)
         return 200
-    
+
     soup = get(url)
     if type(soup) == type(1) or soup is None:
         return soup
@@ -47,10 +47,10 @@ def get_chapter(base_url, chapt):
 def get_range(base_url, start, end):
     for i in range(start, end+1):
         get_chapter(base_url, i)
-    
+
 if __name__ =='__main__':
     if len(sys.argv) < 5:
-        print('Usage: python scrape.py n/e folder_name manga_url_name start end')
+        print('Usage: python ' + sys.argv[0] + ' folder_name manga_url_name start end')
         print('Start and end are start/end chapters, manga_url_name is the name in the url for ur manga')
         print('Minus the chapter and page numbers')
         sys.exit(1)
